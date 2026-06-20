@@ -20,6 +20,7 @@ set -euo pipefail
 
 ASTERISK_VERSION="-1"
 WITH_SAMPLES=0
+RUN_MENUSELECT=0
 
 SRC_DIR="/usr/local/src"
 
@@ -28,16 +29,18 @@ export DEBIAN_FRONTEND=noninteractive
 usage() {
     cat <<EOF
 Usage:
-  sudo $0 --asterisk-version=VERSION [--with-samples]
+  sudo $0 --asterisk-version=VERSION [--with-samples] [--menuselect]
 
 Options:
   --asterisk-version=VERSION   Required. Asterisk version to install
   --with-samples               Run 'make samples' after installation
+  --menuselect                 Run 'make menuselect' before building
   -h, --help                   Show this help
 
 Examples:
   sudo $0 --asterisk-version=20.19.0
   sudo $0 --asterisk-version=20.19.0 --with-samples
+  sudo $0 --asterisk-version=20.19.0 --menuselect
 EOF
 }
 
@@ -48,6 +51,9 @@ for arg in "$@"; do
             ;;
         --with-samples)
             WITH_SAMPLES=1
+            ;;
+        --menuselect)
+            RUN_MENUSELECT=1
             ;;
         -h|--help)
             usage
@@ -88,6 +94,12 @@ if [[ "${WITH_SAMPLES}" -eq 1 ]]; then
     echo "[INFO] Sample configuration installation: enabled"
 else
     echo "[INFO] Sample configuration installation: disabled"
+fi
+
+if [[ "${RUN_MENUSELECT}" -eq 1 ]]; then
+    echo "[INFO] Menuselect interactive module configuration: enabled"
+else
+    echo "[INFO] Menuselect interactive module configuration: disabled"
 fi
 
 echo "[INFO] Installing bootstrap packages"
@@ -132,6 +144,12 @@ fi
 
 echo "[INFO] Configuring Asterisk"
 ./configure
+
+if [[ "${RUN_MENUSELECT}" -eq 1 ]]; then
+    echo "[INFO] Launching Asterisk Menuselect"
+    echo "[INFO] Ensure your terminal is at least 80x27 to use the interface"
+    make menuselect
+fi
 
 echo "[INFO] Building Asterisk"
 make -j"$(nproc)"
