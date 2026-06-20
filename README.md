@@ -19,9 +19,17 @@ Bash script for installing Asterisk from source on Debian-based systems.
 
 ## Usage
 
+Run the script and follow the assistant:
+
 ```bash
 chmod +x asterisk-install.sh
 sudo ./asterisk-install.sh --asterisk-version=20.19.0
+```
+
+or
+
+```bash
+wget https://raw.githubusercontent.com/karlsonru/asterisk-install/master/asterisk-install.sh -O asterisk-install.sh && bash asterisk-install.sh --asterisk-version={ASTERISK_VERSION}
 ```
 
 With sample configuration files:
